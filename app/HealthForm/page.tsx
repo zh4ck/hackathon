@@ -250,19 +250,19 @@ export default function MarsHealthForm() {
 
   return (
 
-    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="min-h-screen bg-black text-white relative overflow-x-hidden overflow-y-auto flex items-center justify-center pt-8 pb-28 sm:pb-20 md:pb-16" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 6rem)" }}>
       <div className="absolute inset-0 bg-gradient-to-tl from-orange-800 to-black opacity-30 z-0"></div>
 
-      <div className="relative z-10 p-8 max-w-4xl w-full mx-auto">
-        <div className="flex items-center space-x-6">
+      <div className="relative z-10 p-4 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+        <div className="flex items-center gap-3 sm:gap-4 md:gap-6">
           {/* Large Question Number */}
-          <div className="text-[10rem] font-bold leading-none text-white opacity-100 select-none">
+          <div className="text-[4.5rem] sm:text-[6rem] md:text-[8rem] lg:text-[10rem] font-bold leading-none text-white opacity-100 select-none shrink-0">
             {currentQuestion + 1}
           </div>
 
-          <div className="h-100 w-2 bg-white opacity-100 self-center"></div>
+          <div className="w-1 sm:w-2 bg-white opacity-100 self-stretch"></div>
 
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={currentQuestion}
@@ -272,30 +272,30 @@ export default function MarsHealthForm() {
                 exit={(dir: 1 | -1) => ({ x: dir > 0 ? -80 : 80, opacity: 0, scale: 0.98, transition: { duration: 0.25, ease: "easeIn" } })}
               >
                 {/* Sub-label / Main Title */}
-                <p className="text-gray-300 text-3xl font-light mb-2">
+                <p className="text-gray-300 text-xl sm:text-2xl md:text-3xl font-light mb-2 whitespace-normal">
                   {currentQuestionData.subLabel}
                 </p>
                 {/* Question Label */}
-                <h2 className="text-7xl font-bold text-white mb-8">
+                <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 sm:mb-8 break-words">
                   {currentQuestionData.label}
                 </h2>
 
                 {/* Input Field */}
-                <div className="w-96"> {/* Container to control width for both types */}
+                <div className="w-full max-w-md sm:max-w-lg"> {/* Container to control width for both types */}
 
                   {/* 🚀 GRADIENT BORDER WRAPPER (Outer div) */}
-                  <div className="p-[4px] rounded-lg bg-gradient-to-r from-red-500 via-blue-500 to-orange-500">
+                  <div className="p-[3px] sm:p-[4px] rounded-lg bg-gradient-to-r from-red-500 via-blue-500 to-orange-500">
 
                     {currentQuestionData.type === "select" ? (
                       <select
                         value={currentValue}
                         onChange={(e) => handleInputChange(e.target.value)}
                         // Inner element has white background and dark text
-                        className="w-full p-4 pr-10 text-xl bg-white text-gray-900 rounded-lg focus:outline-none appearance-none text-left"
+                      className="w-full p-3 sm:p-4 pr-10 text-base sm:text-lg md:text-xl bg-white text-gray-900 rounded-lg focus:outline-none appearance-none text-left"
                         // Custom arrow needs to be dark for the white background
                         style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231F2937'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
                       >
-                        <option value="" disabled className="text-gray-500">{currentQuestionData.placeholder}</option>
+                      <option value="" disabled className="text-gray-500 whitespace-normal">{currentQuestionData.placeholder}</option>
                         {currentQuestionData.options?.map((option) => (
                           <option key={option} value={option} className="text-gray-900">
                             {option}
@@ -309,7 +309,7 @@ export default function MarsHealthForm() {
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder={currentQuestionData.placeholder}
                         // Inner element has white background and dark text
-                        className="w-full p-4 text-xl bg-white text-gray-900 rounded-lg placeholder-gray-500 focus:outline-none transition-all duration-300"
+                      className="w-full p-3 sm:p-4 text-base sm:text-lg md:text-xl bg-white text-gray-900 rounded-lg placeholder-gray-500 focus:outline-none transition-all duration-300 placeholder:whitespace-normal"
                         {...(currentQuestionData.type === "number" && { step: "any" })}
                       />
                     )}
@@ -328,25 +328,25 @@ export default function MarsHealthForm() {
         )}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-16">
+        <div className="flex justify-between mt-10 sm:mt-12 md:mt-16">
           <button
             onClick={handlePrevious}
             disabled={currentQuestion === 0 || isAnalyzing}
-            className="px-8 py-4 bg-gray-800 text-gray-300 text-lg rounded-lg hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
+            className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-800 text-gray-300 text-base sm:text-lg rounded-lg hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300"
           >
             ← Previous
           </button>
 
           {isAnalyzing ? (
-        <div className="flex items-center space-x-3 px-10 py-4 bg-red-600 text-white text-lg rounded-lg">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
-          <span>Analyzing...</span>
+        <div className="flex items-center space-x-3 px-6 sm:px-8 py-3 sm:py-4 bg-red-600 text-white text-base sm:text-lg rounded-lg">
+          <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-t-2 border-b-2 border-white"></div>
+          <span className="truncate">Analyzing...</span>
         </div>
       ) : (
         <button
           onClick={handleNext}
           disabled={!canProceed}
-          className="px-10 py-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+          className="px-8 sm:px-10 py-3 sm:py-4 bg-red-600 text-white text-base sm:text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
         >
           {currentQuestion === questions.length - 1 ? "Take Off" : "Next →"}
         </button>
