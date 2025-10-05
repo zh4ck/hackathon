@@ -58,7 +58,7 @@ export default function Home() {
           <span className="opacity-80">Team @SSE</span>
           <a href="#" className="hover:opacity-100 opacity-80">RESEARCHES</a>
           <a href="#" className="hover:opacity-100 opacity-80">ANALYTICS</a>
-          <a href="#" className="hover:opacity-100 opacity-80">ABOUT US</a>
+          <a href="/AboutUs" className="hover:opacity-100 opacity-80">ABOUT US</a>
         </div>
         <span className="opacity-80">Six Scrambled Eggs Corporation</span>
       </nav>

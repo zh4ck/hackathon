@@ -154,7 +154,7 @@ export default function App() {
             <span className="font-semibold">Team @SSE</span>
             <a href="#" className="hover:text-white">ANALYTICS</a>
             <a href="#" className="hover:text-white">RESEARCHES</a>
-            <a href="#" className="hover:text-white">ABOUT US</a>
+            <a href="/AboutUs" className="hover:text-white">ABOUT US</a>
           </div>
           <div>
             <p>Team: 6 Scrambled Eggs</p>

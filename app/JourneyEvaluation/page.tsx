@@ -66,7 +66,7 @@ export default function JourneyEvaluation() {
             <a href="#" className="hover:text-white">
               RESEARCHES
             </a>
-            <a href="#" className="hover:text-white">
+            <a href="/AboutUs" className="hover:text-white">
               ABOUT US
             </a>
           </div>
