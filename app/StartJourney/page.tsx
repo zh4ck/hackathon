@@ -1,7 +1,9 @@
 "use client";
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from "react";
 import { Montserrat } from "next/font/google";
+import { useRouter } from "next/navigation";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -13,7 +15,7 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [firstSectionLocked, setFirstSectionLocked] = useState(true);
   const sectionRefs = useRef<HTMLDivElement[]>([]);
-
+  const router = useRouter();
   const [marsRocketTransform, setMarsRocketTransform] = useState({
     y: 0,
     rotation: 0,
@@ -301,7 +303,7 @@ export default function Home() {
            z-[20]
          "
         ></div>
-
+        
         <div className="absolute left-1/2 transform -translate-x-1/2 z-[40]">
           <img
             src="/roktet 1.png"
@@ -312,28 +314,35 @@ export default function Home() {
             }}
           />
         </div>
-
+        
+        
         <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 flex justify-center z-[30]">
+        <Link href="/MarsSurvivalKit">
           <div className="flex flex-col items-center -translate-y-6 transform transition-transform duration-300 hover:scale-110 mr-[15vw]">
             <img src="/Base.png" alt="Base" className="w-[12vw] h-auto" />
-            <p className="mt-2 text-white text-center">Base Text</p>
+            <p className="mt-2 text-white text-center">Mars Survival Kit</p>
           </div>
+        </Link>
+          <Link href="/JourneyEvaluation">
           <div className="flex flex-col items-center translate-y-6 transform transition-transform duration-300 hover:scale-110">
             <img
               src="/JourneyEval.png"
               alt="JourneyEval"
               className="w-[12vw] h-auto"
             />
-            <p className="mt-2 text-white text-center">Journey Text</p>
+            <p className="mt-2 text-white text-center">Journey Evaluation</p>
           </div>
+          </Link>
+          <Link href="/ResearchHub"> {/* <-- 3. Set the href to your internal path */}
           <div className="flex flex-col items-center -translate-y-6 transform transition-transform duration-300 hover:scale-110 ml-[15vw]">
             <img
               src="/Satelite.png"
               alt="Satelite"
               className="w-[12vw] h-auto"
             />
-            <p className="mt-2 text-white text-center">Satellite Text</p>
+            <p className="mt-2 text-white text-center">Biology on Mars</p>
           </div>
+        </Link>
         </div>
       </div>
       
@@ -343,17 +352,18 @@ export default function Home() {
         className="bg-black flex justify-center items-center py-24"
       >
         <button
-          className="relative text-2xl md:text-4xl lg:text-5xl font-bold tracking-wide px-10 py-4 rounded-full text-[#E3B18C]
-           bg-gradient-to-r from-[#2B0F00] via-[#4A1A08] to-[#1A0A05]
-           shadow-[0_0_10px_#2B0F00]
-           hover:shadow-[0_0_10px_#8B2E1E]
-           hover:scale-102 transition-all duration-500 ease-in-out
-           before:content-[''] before:absolute before:inset-0 before:rounded-full before:opacity-0 
-           before:bg-gradient-to-r before:from-[#8B2E1E] before:to-[#CC5E2E]
-           hover:before:opacity-10 overflow-hidden"
-        >
-          <span className="relative z-10">Enter The Dark Side</span>
-        </button>
+      onClick={() => router.push("/EndJourney")}
+      className="relative text-2xl md:text-4xl lg:text-5xl font-bold tracking-wide px-10 py-4 rounded-full text-[#E3B18C]
+      bg-gradient-to-r from-[#2B0F00] via-[#4A1A08] to-[#1A0A05]
+      shadow-[0_0_10px_#2B0F00]
+      hover:shadow-[0_0_10px_#8B2E1E]
+      hover:scale-102 transition-all duration-500 ease-in-out
+      before:content-[''] before:absolute before:inset-0 before:rounded-full before:opacity-0 
+      before:bg-gradient-to-r before:from-[#8B2E1E] before:to-[#CC5E2E]
+      hover:before:opacity-10 overflow-hidden"
+    >
+      <span className="relative z-10">Enter The Dark Side</span>
+      </button>
       </div>
     </div>
   );
