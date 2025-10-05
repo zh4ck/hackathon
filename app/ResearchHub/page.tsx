@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useState } from 'react';
 
 // For the search icon, we can use an inline SVG to keep everything in one file.
 const SearchIcon = () => (
@@ -21,6 +23,41 @@ const SearchIcon = () => (
 
 // Main App Component
 export default function App() {
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [sources, setSources] = useState<any[]>([]);
+  const [topic, setTopic] = useState<string>("");
+
+  const doSearch = async (q: string) => {
+    if (!q || q.trim() === "") return;
+    setLoading(true);
+    setAnswer(null);
+    setSources([]);
+    setTopic(q);
+
+    try {
+      const res = await fetch("https://clearerthanmoist-exploremarsapi.hf.space/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, k: 3 }),
+      });
+
+      if (!res.ok) throw new Error(`Search API failed with status ${res.status}`);
+
+      const data = await res.json();
+      // API expected to return { answer: string, sources: string[] }
+      setAnswer(data.answer ?? "No answer returned.");
+      setSources(Array.isArray(data.sources) ? data.sources : []);
+    } catch (err) {
+      console.error("Search failed:", err);
+      setAnswer("Search failed. Please try again.");
+      setSources([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-bl from-[#697bee] via-black to-[#ee8869] text-white font-sans p-8 md:p-12">
       <div className="max-w-7xl mx-auto">
@@ -31,7 +68,7 @@ export default function App() {
           <a href="/StartJourney#bottom" className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15 transition-colors">Back</a>
         </header>
         
-        <p className="text-gray-300 -mt-8 mb-8">Explore curated research about Mars and space biology.</p>
+  <p className="text-gray-300 -mt-8 mb-8">Explore curated research about Mars and space biology.</p>
         
         {/* Search */}
         <div className="relative mb-12">
@@ -41,44 +78,70 @@ export default function App() {
             <input
               type="text"
               placeholder="What do you want to know more about Mars?"
-              className="w-full bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 rounded-full py-4 pl-12 pr-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); doSearch(query); } }}
+              className="w-full bg-white/10 text-white placeholder-gray-400 rounded-full py-4 pl-12 pr-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
         </div>
 
-        {/* Main Content Section */}
-        <main className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+  {/* Main Content Section */}
+  <main className="grid grid-cols-1 lg:grid-cols-3 gap-12 min-h-0">
           
           {/* Summary Column */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex flex-col h-full min-h-0">
             <h2 className="text-3xl font-semibold mb-4">Summary</h2>
-            <div className="bg-white/5 border border-white/20 rounded-2xl p-6 md:p-8 space-y-4 backdrop-blur-md">
-              <h3 className="text-xl font-bold text-gray-200">Recurring Slope Lineae (RSL)</h3>
-              <p className="text-gray-300 leading-relaxed">
-                RSL are narrow, dark streaks—often just a few meters wide—that appear on Martian crater walls
-                and hillsides during the planet&apos;s warmer months, then fade when temperatures drop. Discovered
-                by NASA&apos;s Mars Reconnaissance Orbiter in 2011, they sparked major interest because they seemed
-                to indicate liquid water
-              </p>
-              <p className="text-gray-300 leading-relaxed">
-                Early hypotheses suggested they were caused by briny (salty) water seeping from underground,
-                since salts can lower water&apos;s freezing point enough to allow it to exist temporarily in Mars&apos;s thin
-                atmosphere. However, later studies using high-resolution imaging and spectral data suggested
-                RSL might instead be dry granular flows — essentially, sand or dust avalanches triggered by
-                sublimating ice or seasonal temperature changes.
-              </p>
+            <div className="bg-white/5 border border-white/20 rounded-2xl p-6 md:p-8 space-y-4 backdrop-blur-md flex-1 min-h-0 overflow-auto">
+              <h3 className="text-xl font-bold text-gray-200">{topic}</h3>
+              <div className="text-gray-300 leading-relaxed">
+                {loading ? (
+                  <p>Searching...</p>
+                ) : (
+                  <p>{answer ?? 'No results yet. Type a query and press Enter.'}</p>
+                )}
+              </div>
             </div>
           </div>
 
           {/* References Column */}
-          <div>
+          <div className="flex flex-col h-full min-h-0">
             <h2 className="text-3xl font-semibold mb-4">References</h2>
-            <div className="bg-white/5 border border-white/20 rounded-2xl p-6 md:p-8 backdrop-blur-md h-full">
+            <div className="bg-white/5 border border-white/20 rounded-2xl p-6 md:p-8 backdrop-blur-md h-full flex-1 min-h-0 overflow-auto">
               <ul className="space-y-4">
-                {['List[0]', 'List[1]', 'List[2]', 'List[3]'].map((item, index) => (
-                  <li key={index} className="text-gray-300 text-lg hover:text-white transition-colors duration-200 cursor-pointer">
-                    {item}
-                  </li>
-                ))}
+                {sources.length > 0 ? (
+                  sources.map((s, i) => {
+                    let content: React.ReactNode;
+                    if (typeof s === 'string') {
+                      content = s;
+                    } else if (s && typeof s === 'object') {
+                      // Common shapes: { pdf: 'url', page: 3 } or { url: '', title: '' }
+                      const url = s.pdf ?? s.url ?? s.link;
+                      if (url && typeof url === 'string') {
+                        const label = s.title ?? url;
+                        content = (
+                          <a href={url} target="_blank" rel="noreferrer" className="underline">
+                            {label}
+                          </a>
+                        );
+                      } else {
+                        // Fallback: render a readable JSON blob
+                        content = (
+                          <pre className="whitespace-pre-wrap break-words text-sm text-gray-300">{JSON.stringify(s)}</pre>
+                        );
+                      }
+                    } else {
+                      content = String(s);
+                    }
+
+                    return (
+                      <li key={i} className="text-gray-300 text-lg hover:text-white transition-colors duration-200 cursor-pointer">
+                        {content}
+                      </li>
+                    );
+                  })
+                ) : (
+                  <li className="text-gray-400">No sources yet. Search to populate sources.</li>
+                )}
               </ul>
             </div>
           </div>
