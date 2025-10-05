@@ -31,21 +31,41 @@ export default function Home() {
       title: "Low Earth Orbit",
       description:
         "Roughly 400 kilometers above Earth, you orbit the planet every 90 minutes. Sunrises flash past the window sixteen times a day. Earth’s magnetic field still shields you from most radiation. The International Space Station maintains this orbit, constantly adjusting altitude to avoid debris. Communications are near-instant, and resupply from Earth remains possible. LEO is humanity’s training ground for sustained life beyond our atmosphere.",
+      timeFromTakeOff: "T+0 to T+3 days",
+      survivability: "High (~98–99%) — rapid rescue, robust redundancy",
+      funFact: "You’ll see ~16 sunrises and sunsets every day.",
+      threats: "Orbital debris, microgravity deconditioning, CO₂ buildup, hardware faults",
+      radiationDose: "~0.3–0.6 mSv/day (Earth’s magnetosphere still helps)",
     },
     {
       title: "Lunar Gateway",
       description:
         "Far beyond Earth’s magnetic reach, the Lunar Gateway orbits the Moon in a near-rectilinear halo path. The view alternates between the lunar surface and distant Earth. Radiation increases, and communication delays reach several seconds. The station tests navigation, power, and life-support systems for deep-space missions. It marks the first permanent human presence operating in true deep-space conditions between two worlds.",
+      timeFromTakeOff: "~T+7 to T+30 days",
+      survivability: "High–Moderate (~90–95%) — no quick rescue, but planned redundancy",
+      funFact: "Gateway’s NRHO keeps frequent Earth/Moon line-of-sight for comms.",
+      threats: "Higher radiation, comms latency (seconds), isolation, logistics",
+      radiationDose: "~1–1.5 mSv/day (outside Earth’s magnetic shield)",
     },
     {
       title: "Mars Transit",
       description:
         "You’ve left lunar orbit and entered interplanetary space. The Sun appears smaller, and stars remain fixed against a black backdrop. Communications with Earth lag up to 20 minutes. Solar storms and cosmic rays strike the spacecraft, demanding constant monitoring. Everything—navigation, energy, and life support—depends on precision and redundancy. Mars grows brighter each week, a distant orange point slowly resolving into a planet.",
+      timeFromTakeOff: "~T+30 to T+240 days (mission-profile dependent)",
+      survivability: "Moderate (~70–85%) — deep-space risks, strict systems discipline",
+      funFact: "One‑way light time can approach ~20 minutes near conjunction.",
+      threats: "Solar particle events, galactic cosmic rays, life‑support failures",
+      radiationDose: "~1.5–2 mSv/day average; spikes during solar events",
     },
     {
       title: "Mars Surface",
       description:
         "You’ve landed on a world half again as far from the Sun as Earth. The sky glows butterscotch under a thin CO₂ atmosphere. Gravity is weak; dust settles slowly. Temperatures swing wildly from day to night, and storms can engulf the horizon for weeks. From this vantage, Earth is a faint star. Mars offers the first real test of building and surviving on another planet.",
+      timeFromTakeOff: "~T+240+ days (arrival and surface ops)",
+      survivability: "Moderate (~75–90%) with adequate habitat, ISRU, and medical",
+      funFact: "Gravity is ~38% of Earth’s; sunsets appear blue on Mars.",
+      threats: "Global dust storms, perchlorates, EVA risks, power/thermal constraints",
+      radiationDose: "~0.5–1 mSv/day unshielded; far lower inside habitat",
     },
   ];
 
@@ -260,7 +280,7 @@ export default function Home() {
               ref={(el) => {
                 if (el) sectionRefs.current[index] = el;
               }}
-              className="w-full h-screen flex flex-col md:flex-row items-center justify-center px-8 py-8 text-white relative"
+              className="w-full h-screen flex flex-col md:flex-row items-center justify-center px-8 py-8 text-white relative md:gap-8"
             >
               <div className="w-full md:w-1/4 flex items-center justify-center mb-4 md:mb-0">
                 <h2 className="text-5xl sm:text-2xl md:text-3xl font-extrabold">
@@ -268,16 +288,16 @@ export default function Home() {
                 </h2>
               </div>
               <div className="w-full md:w-2/4 flex items-start md:items-start px-2 md:px-0 mb-4 md:mb-0">
-                <p className="text-lg sm:text-base md:text-base lg:text-lg font-[400] text-gray-200">
+                <p className="text-lg sm:text-base md:text-base lg:text-lg font-[400] text-gray-200 text-justify">
                   {sec.description}
                 </p>
               </div>
-              <div className="w-full md:w-1/4 flex flex-col items-center justify-center text-gray-400 text-xs sm:text-sm md:text-sm lg:text-base font-[300]">
-                <p>Time from Take Off:</p>
-                <p>Survivability:</p>
-                <p>Fun fact:</p>
-                <p>Threats:</p>
-                <p>Radiation Dose:</p>
+              <div className="w-full md:w-1/4 flex flex-col items-start justify-center text-gray-300 text-xs sm:text-sm md:text-sm lg:text-base font-[300] space-y-2 md:space-y-3">
+                <p><span className="text-gray-400">Time from Take Off:</span> {sec.timeFromTakeOff}</p>
+                <p><span className="text-gray-400">Survivability:</span> {sec.survivability}</p>
+                <p><span className="text-gray-400">Fun fact:</span> {sec.funFact}</p>
+                <p><span className="text-gray-400">Threats:</span> {sec.threats}</p>
+                <p><span className="text-gray-400">Radiation Dose:</span> {sec.radiationDose}</p>
               </div>
               {index > 0 && (
                 <button
