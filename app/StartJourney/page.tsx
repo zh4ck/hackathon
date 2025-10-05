@@ -13,7 +13,7 @@ const montserrat = Montserrat({
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
-  const [firstSectionLocked, setFirstSectionLocked] = useState(true);
+  const [firstSectionLocked, setFirstSectionLocked] = useState(false);
   const [isInitialReady, setIsInitialReady] = useState(false);
   const sectionRefs = useRef<HTMLDivElement[]>([]);
   const router = useRouter();

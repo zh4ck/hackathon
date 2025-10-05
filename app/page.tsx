@@ -7,6 +7,14 @@ export default function Home() {
   const router = useRouter();
 
   const handleAstronautJourney = async () => {
+    // Check if default assessment is already cached
+    const cachedDefault = sessionStorage.getItem("marsAssessmentDefault");
+    if (cachedDefault) {
+      console.log("Using cached default assessment");
+      router.push("/StartJourney");
+      return;
+    }
+
     const heightCm = 175;
     const massKg = 65;
     const bmi = parseFloat((massKg / Math.pow(heightCm / 100, 2)).toFixed(1));
@@ -26,14 +34,16 @@ export default function Home() {
       if (res.ok) {
         const data = await res.json();
         try {
+          // Cache the default assessment result for future use
+          sessionStorage.setItem("marsAssessmentDefault", JSON.stringify(data));
           sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
-        } catch (e) {
+        } catch (e: any) {
           console.error("Failed to store default assessment", e);
         }
       } else {
         console.error("Default assessment request failed", await res.text());
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Default assessment error", err);
     } finally {
       router.push("/StartJourney");
