@@ -77,9 +77,9 @@ export async function POST(req: Request) {
 
     console.log("Gemini API call successful");
     return NextResponse.json({ summary: response.text });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini API error:", error);
-    console.error("Error details:", error.message);
+    console.error("Error details:", error instanceof Error ? error.message : String(error));
     console.error("Full error:", JSON.stringify(error, null, 2));
     
     // Check if it's an API key issue

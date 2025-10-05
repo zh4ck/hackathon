@@ -10,13 +10,6 @@ interface FormData {
   sleep: string;
   medicalCondition: string;
 }
-
-interface AssessmentResult {
-  survivalChance: string;
-  improvements: string;
-  medicalConcern: string;
-}
-
 const questions = [
   {
     id: "biologicalSex",
