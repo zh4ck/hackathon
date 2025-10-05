@@ -1,7 +1,8 @@
 "use client";
 
 import Link from 'next/link';
-import { useEffect, useRef, useState, useLayoutEffect } from "react";
+import Image from 'next/image';
+import { useEffect, useRef, useState, useLayoutEffect, useCallback } from "react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/navigation";
 
@@ -82,17 +83,17 @@ export default function Home() {
     }
   };
 
-  const navigateUp = () => {
+  const navigateUp = useCallback(() => {
     if (currentSectionIndex > 0) {
       scrollToSection(currentSectionIndex - 1);
     }
-  };
+  }, [currentSectionIndex]);
 
-  const navigateDown = () => {
+  const navigateDown = useCallback(() => {
     if (currentSectionIndex < sections.length - 1) {
       scrollToSection(currentSectionIndex + 1);
     }
-  };
+  }, [currentSectionIndex, sections.length]);
 
   const indicatorTop =
     typeof window !== "undefined" && typeof document !== "undefined"
@@ -246,7 +247,7 @@ export default function Home() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentSectionIndex]);
+  }, [currentSectionIndex, navigateDown, navigateUp]);
 
   // ADDED: Track which section is currently in view
   useEffect(() => {
@@ -344,11 +345,12 @@ export default function Home() {
               }}
               className="absolute w-24 h-24 transition-all duration-100"
             >
-              <img
+              <Image
                 src="/roktet 1.png"
                 alt="Rocket"
-                height={1500}
                 width={1500}
+                height={1500}
+                style={{ objectFit: 'contain' }}
               />
             </div>
           </div>
@@ -408,9 +410,11 @@ export default function Home() {
         ></div>
         
         <div className="absolute left-1/2 transform -translate-x-1/2 z-[40]">
-          <img
+          <Image
             src="/roktet 1.png"
             alt="Rocket"
+            width={600}
+            height={600}
             className="w-[10vw] h-auto transition-transform duration-[1500ms] ease-out"
             style={{
               transform: `translateY(${marsRocketTransform.y}px) rotate(${marsRocketTransform.rotation}deg) scale(${marsRocketTransform.scale})`,
@@ -422,9 +426,11 @@ export default function Home() {
         <div className="absolute top-[56%] left-1/2 transform -translate-x-1/2 w-full max-w-[1100px] px-10 flex justify-between items-end z-[30]">
           <Link href="/JourneyEvaluation">
             <div className="flex flex-col items-center translate-y-4 transform transition-transform duration-300 hover:scale-110">
-              <img
+              <Image
                 src="/JourneyEval.png"
                 alt="JourneyEval"
+                width={400}
+                height={300}
                 className="w-[14vw] max-w-[200px] h-auto"
               />
               <p className="mt-2 text-white text-center font-[800] text-lg md:text-xl">Journey Evaluation</p>
@@ -432,9 +438,11 @@ export default function Home() {
           </Link>
           <Link href="/ResearchHub">
             <div className="flex flex-col items-center -translate-y-4 transform transition-transform duration-300 hover:scale-110">
-              <img
+              <Image
                 src="/Satelite.png"
                 alt="Satelite"
+                width={400}
+                height={300}
                 className="w-[14vw] max-w-[200px] h-auto"
               />
               <p className="mt-2 text-white text-center font-[900] text-xl md:text-2xl">Research Hub</p>

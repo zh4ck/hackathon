@@ -44,12 +44,14 @@ export async function POST(req: Request) {
 
         // Add related topics if available
         if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
-          data.RelatedTopics.slice(0, 2).forEach((topic: any, index: number) => {
-            if (topic.Text && topic.Text.length > 50) {
+          data.RelatedTopics.slice(0, 2).forEach((topic: unknown, index: number) => {
+            // Narrow unknown to object with optional Text property
+            const t = topic as { Text?: unknown };
+            if (t && typeof t === 'object' && typeof t.Text === 'string' && t.Text.length > 50) {
               searchResults.push({
                 id: `ddg-topic-${index}`,
-                title: topic.Text.split(' - ')[0] || `Related: ${query}`,
-                abstract: topic.Text
+                title: t.Text.split(' - ')[0] || `Related: ${query}`,
+                abstract: t.Text
               });
             }
           });

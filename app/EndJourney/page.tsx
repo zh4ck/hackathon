@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Share_Tech_Mono } from 'next/font/google';
-import { Rss, Beaker, Thermometer, Wind, AlertTriangle, HelpCircle, Activity } from 'lucide-react';
+import { Rss, Beaker, Wind, AlertTriangle, HelpCircle, Activity } from 'lucide-react';
 import { useState, useEffect, ReactNode, ElementType } from 'react';
 
 // A more futuristic, monospace font for the terminal feel
@@ -111,7 +111,7 @@ export default function EndJourney() {
           </LogEntry>
           
           <LogEntry timestamp="2025-10-05 15:42:58" title="HISTORICAL ANALYSIS" icon={Wind}>
-            Core sample magnetic data aligns with the "Great Calamity" hypothesis. Magnetosphere collapse occurred over approx. 10,000 years. Pre-event biosignatures remain inconclusive.
+            Core sample magnetic data aligns with the &quot;Great Calamity&quot; hypothesis. Magnetosphere collapse occurred over approx. 10,000 years. Pre-event biosignatures remain inconclusive.
           </LogEntry>
 
           <LogEntry timestamp="2025-10-05 15:43:21" title="PRIORITY ALERT" icon={AlertTriangle}>

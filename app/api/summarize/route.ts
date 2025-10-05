@@ -79,19 +79,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ summary: response.text });
   } catch (error) {
     console.error("Gemini API error:", error);
-    console.error("Error details:", error.message);
+    if (error instanceof Error) {
+      console.error("Error details:", error.message);
+    } else {
+      console.error("Error details:", error);
+    }
     console.error("Full error:", JSON.stringify(error, null, 2));
     
     // Check if it's an API key issue
-    if (error.message.includes("API key") || error.message.includes("authentication")) {
+    if (error instanceof Error && (error.message.includes("API key") || error.message.includes("authentication"))) {
       return NextResponse.json({ 
         summary: `API Key Error: ${error.message}. Please verify your Google API key is correct and has the necessary permissions.` 
       });
     }
-    
+
     // Return a more helpful error message
-    return NextResponse.json({ 
-      summary: `Error generating summary: ${error.message}. Please check your Google API key configuration.` 
-    });
+    if (error instanceof Error) {
+      return NextResponse.json({ 
+        summary: `Error generating summary: ${error.message}. Please check your Google API key configuration.` 
+      });
+    } else {
+      return NextResponse.json({ 
+        summary: `Error generating summary. Please check your Google API key configuration.` 
+      });
+    }
   }
 }

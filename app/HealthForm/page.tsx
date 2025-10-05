@@ -73,11 +73,7 @@ export default function MarsHealthForm() {
   });
   const router = useRouter();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [results, setResults] = useState<AssessmentResult | null>(null);
-
-  const handleStartJourney = () => {
-    router.push("/StartJourney");
-  };
+  const [, setResults] = useState<AssessmentResult | null>(null);
 
   const handleInputChange = (value: string) => {
     const questionId = questions[currentQuestion].id as keyof FormData;
@@ -141,7 +137,7 @@ export default function MarsHealthForm() {
     }
 
     return { valid, message };
-  }, [currentValue, currentQuestionData.id]);
+  }, [currentValue, currentQuestionData.id, currentQuestionData.max, currentQuestionData.min]);
 
   const canProceed = validation.valid;
 
@@ -231,17 +227,7 @@ export default function MarsHealthForm() {
     }
   };
 
-  const resetForm = () => {
-    setCurrentQuestion(0);
-    setFormData({
-      biologicalSex: "",
-      age: "",
-      heightMass: "",
-      sleep: "",
-      medicalCondition: "",
-    });
-    setResults(null);
-  };
+  // resetForm removed (unused in UI). Keep logic in component if needed elsewhere.
 
   // --- I've omitted the JSX for brevity as it remains unchanged. ---
   // --- Paste this logic into your existing file. ---

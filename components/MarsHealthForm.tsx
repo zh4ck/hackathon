@@ -68,7 +68,7 @@ export default function MarsHealthForm() {
     medicalCondition: "",
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [results, setResults] = useState<AssessmentResult | null>(null);
+    const [, setResults] = useState<AssessmentResult | null>(null);
 
   const handleInputChange = (value: string) => {
     const questionId = questions[currentQuestion].id as keyof FormData;
@@ -132,7 +132,7 @@ export default function MarsHealthForm() {
     }
   	
   	return { valid, message };
-  }, [currentValue, currentQuestionData.id]);
+    }, [currentValue, currentQuestionData.id, currentQuestionData.max, currentQuestionData.min]);
   
   const canProceed = validation.valid;
 
@@ -197,17 +197,7 @@ export default function MarsHealthForm() {
   	}
   };
 
-  const resetForm = () => {
-  	setCurrentQuestion(0);
-  	setFormData({
-    		biologicalSex: "",
-    		age: "",
-    		heightMass: "",
-    		sleep: "",
-    		medicalCondition: "",
-  	});
-  	setResults(null);
-  };
+  // resetForm removed (unused in this component)
   
   return (
     
