@@ -83,16 +83,15 @@ export default function Home() {
               </p>
             </Link>
 
-            <p
+            <button
+              type="button"
               onClick={handleAstronautJourney}
-              role="button"
-              tabIndex={0}
               className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-400 ml-5 mr-5 
                         hover:text-white hover:scale-[1.05] 
                         transition-all duration-300 ease-in-out cursor-pointer"
             >
               Astronaut’s Journey
-            </p>
+            </button>
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-400 mb-4 ml-5 mr-5 
                         hover:text-white hover:scale-[1.05] 
                         transition-all duration-300 ease-in-out cursor-pointer">
