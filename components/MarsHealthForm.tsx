@@ -299,7 +299,7 @@ export default function MarsHealthForm() {
               disabled={!canProceed}
               className="px-10 py-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
             >
-              {currentQuestion === questions.length - 1 ? "Get Assessment" : "Next →"}
+              {currentQuestion === questions.length - 1 ? "Take Off" : "Next →"}
             </button>
           )}
         </div>

@@ -1,19 +1,19 @@
 "use client";
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/navigation";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["700"],
   style: ["normal", "italic"],
 });
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [firstSectionLocked, setFirstSectionLocked] = useState(true);
+  const [isInitialReady, setIsInitialReady] = useState(false);
   const sectionRefs = useRef<HTMLDivElement[]>([]);
   const router = useRouter();
   const [marsRocketTransform, setMarsRocketTransform] = useState({
@@ -28,9 +28,9 @@ export default function Home() {
 
   const sections = [
     {
-      title: "Lunar Gateway",
+      title: "Low Earth Orbit",
       description:
-        "Far beyond Earth’s magnetic reach, the Lunar Gateway orbits the Moon in a near-rectilinear halo path. The view alternates between the lunar surface and distant Earth. Radiation increases, and communication delays reach several seconds. The station tests navigation, power, and life-support systems for deep-space missions. It marks the first permanent human presence operating in true deep-space conditions between two worlds.",
+        "Roughly 400 kilometers above Earth, you orbit the planet every 90 minutes. Sunrises flash past the window sixteen times a day. Earth’s magnetic field still shields you from most radiation. The International Space Station maintains this orbit, constantly adjusting altitude to avoid debris. Communications are near-instant, and resupply from Earth remains possible. LEO is humanity’s training ground for sustained life beyond our atmosphere.",
     },
     {
       title: "Lunar Gateway",
@@ -38,14 +38,14 @@ export default function Home() {
         "Far beyond Earth’s magnetic reach, the Lunar Gateway orbits the Moon in a near-rectilinear halo path. The view alternates between the lunar surface and distant Earth. Radiation increases, and communication delays reach several seconds. The station tests navigation, power, and life-support systems for deep-space missions. It marks the first permanent human presence operating in true deep-space conditions between two worlds.",
     },
     {
-      title: "Lunar Gateway",
+      title: "Mars Transit",
       description:
-        "Far beyond Earth’s magnetic reach, the Lunar Gateway orbits the Moon in a near-rectilinear halo path. The view alternates between the lunar surface and distant Earth. Radiation increases, and communication delays reach several seconds. The station tests navigation, power, and life-support systems for deep-space missions. It marks the first permanent human presence operating in true deep-space conditions between two worlds.",
+        "You’ve left lunar orbit and entered interplanetary space. The Sun appears smaller, and stars remain fixed against a black backdrop. Communications with Earth lag up to 20 minutes. Solar storms and cosmic rays strike the spacecraft, demanding constant monitoring. Everything—navigation, energy, and life support—depends on precision and redundancy. Mars grows brighter each week, a distant orange point slowly resolving into a planet.",
     },
     {
-      title: "Lunar Gateway",
+      title: "Mars Surface",
       description:
-        "Far beyond Earth’s magnetic reach, the Lunar Gateway orbits the Moon in a near-rectilinear halo path. The view alternates between the lunar surface and distant Earth. Radiation increases, and communication delays reach several seconds. The station tests navigation, power, and life-support systems for deep-space missions. It marks the first permanent human presence operating in true deep-space conditions between two worlds.",
+        "You’ve landed on a world half again as far from the Sun as Earth. The sky glows butterscotch under a thin CO₂ atmosphere. Gravity is weak; dust settles slowly. Temperatures swing wildly from day to night, and storms can engulf the horizon for weeks. From this vantage, Earth is a faint star. Mars offers the first real test of building and surviving on another planet.",
     },
   ];
 
@@ -111,6 +111,44 @@ export default function Home() {
     };
   }, []);
 
+  // Ensure deep-linking to bottom lands user at the bottom section without visible jump
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash === "#bottom") {
+      setFirstSectionLocked(false);
+      const section = buttonSectionRef.current;
+      if (section) {
+        const prevScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = "auto";
+        // Remove the hash to prevent the browser or any observers from re-scrolling
+        try {
+          const { pathname, search } = window.location;
+          window.history.replaceState(null, "", `${pathname}${search}`);
+        } catch {}
+        const offset = 300; // pixels above the bottom section
+        const targetTop = Math.max(0, section.offsetTop - offset);
+        // Ensure layout has settled: do two frames just in case
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: targetTop, behavior: "auto" });
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: targetTop, behavior: "auto" });
+          });
+        });
+        // Restore any previous smooth scroll behavior
+        document.documentElement.style.scrollBehavior = prevScrollBehavior;
+      } else {
+        const offset = 400;
+        const targetTop = Math.max(0, document.body.scrollHeight - window.innerHeight - offset);
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: targetTop, behavior: "auto" });
+        });
+      }
+      setIsInitialReady(true);
+      return;
+    }
+    setIsInitialReady(true);
+  }, []);
+
   // ADDED: This useEffect watches the button section to hide/show the timeline
   useEffect(() => {
     const section = buttonSectionRef.current;
@@ -136,8 +174,10 @@ export default function Home() {
     };
   }, []);
 
+  
+
   return (
-    <div>
+    <div style={{ visibility: isInitialReady ? "visible" : "hidden" }}>
       <div className="flex text-center justify-center h-[100vh] w-full relative">
         <div className="flex flex-col items-center">
           <h1
@@ -146,9 +186,9 @@ export default function Home() {
             Start Your Journey
           </h1>
           <h1
-            className={`${montserrat.className} flex items-center mt-30 sm:mt-5 md:mt-10 text-2xl md:text-3xl lg:text-3xl xl:text-3xl font-normal italic text-gray-500`}
+            className={`${montserrat.className} flex items-center mt-30 sm:mt-5 md:mt-10 text-2xl md:text-3xl lg:text-3xl xl:text-3xl font-[500] italic text-gray-200`}
           >
-            Stay Safe
+            Go For Launch
           </h1>
         </div>
 
@@ -172,6 +212,8 @@ export default function Home() {
         <div
           style={{
             background:
+              "radial-gradient(closest-side at 60% 50%, rgba(46,204,113,0.25) 0%, rgba(46,204,113,0.0) 65%), " +
+              "radial-gradient(closest-side at 35% 40%, rgba(46,204,113,0.18) 0%, rgba(46,204,113,0.0) 60%), " +
               "linear-gradient(180deg, #00FFE6 0%, #1A4B63 55%, #0B0B0B 100%)",
           }}
           className="
@@ -221,16 +263,16 @@ export default function Home() {
               className="w-full h-screen flex flex-col md:flex-row items-center justify-center px-8 py-8 text-white relative"
             >
               <div className="w-full md:w-1/4 flex items-center justify-center mb-4 md:mb-0">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                <h2 className="text-5xl sm:text-2xl md:text-3xl font-extrabold">
                   {sec.title}
                 </h2>
               </div>
               <div className="w-full md:w-2/4 flex items-start md:items-start px-2 md:px-0 mb-4 md:mb-0">
-                <p className="text-sm sm:text-base md:text-base lg:text-lg">
+                <p className="text-lg sm:text-base md:text-base lg:text-lg font-[400] text-gray-200">
                   {sec.description}
                 </p>
               </div>
-              <div className="w-full md:w-1/4 flex flex-col items-center justify-center text-gray-400 text-xs sm:text-sm md:text-sm lg:text-base">
+              <div className="w-full md:w-1/4 flex flex-col items-center justify-center text-gray-400 text-xs sm:text-sm md:text-sm lg:text-base font-[300]">
                 <p>Time from Take Off:</p>
                 <p>Survivability:</p>
                 <p>Fun fact:</p>
@@ -320,7 +362,7 @@ export default function Home() {
         <Link href="/MarsSurvivalKit">
           <div className="flex flex-col items-center -translate-y-6 transform transition-transform duration-300 hover:scale-110 mr-[15vw]">
             <img src="/Base.png" alt="Base" className="w-[12vw] h-auto" />
-            <p className="mt-2 text-white text-center">Mars Survival Kit</p>
+            <p className="mt-2 text-white text-center font-[700]">Mars Survival Kit</p>
           </div>
         </Link>
           <Link href="/JourneyEvaluation">
@@ -330,7 +372,7 @@ export default function Home() {
               alt="JourneyEval"
               className="w-[12vw] h-auto"
             />
-            <p className="mt-2 text-white text-center">Journey Evaluation</p>
+            <p className="mt-2 text-white text-center font-[700]">Journey Evaluation</p>
           </div>
           </Link>
           <Link href="/ResearchHub"> {/* <-- 3. Set the href to your internal path */}
@@ -340,7 +382,7 @@ export default function Home() {
               alt="Satelite"
               className="w-[12vw] h-auto"
             />
-            <p className="mt-2 text-white text-center">Biology on Mars</p>
+            <p className="mt-2 text-white text-center font-[700]">Biology on Mars</p>
           </div>
         </Link>
         </div>

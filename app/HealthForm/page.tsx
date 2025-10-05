@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface FormData {
   biologicalSex: "Male" | "Female" | "";
@@ -62,6 +63,7 @@ const questions = [
 
 export default function MarsHealthForm() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const [formData, setFormData] = useState<FormData>({
     biologicalSex: "",
     age: "",
@@ -191,6 +193,13 @@ export default function MarsHealthForm() {
 
       const data = await response.json();
       setResults(data);
+      if (typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
+        } catch (e) {
+          console.error("Failed to store assessment in sessionStorage", e);
+        }
+      }
     } catch (error) {
       console.error("Assessment failed:", error);
       setResults({
@@ -208,6 +217,7 @@ export default function MarsHealthForm() {
     if (!canProceed) return;
 
     if (currentQuestion < questions.length - 1) {
+      setDirection(1);
       setCurrentQuestion(prev => prev + 1);
     } else {
       handleSubmit();
@@ -216,6 +226,7 @@ export default function MarsHealthForm() {
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
+      setDirection(-1);
       setCurrentQuestion(prev => prev - 1);
     }
   };
@@ -239,7 +250,7 @@ export default function MarsHealthForm() {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-tl from-orange-800 to-black opacity-30 z-0"></div>
 
       <div className="relative z-10 p-8 max-w-4xl w-full mx-auto">
@@ -252,50 +263,60 @@ export default function MarsHealthForm() {
           <div className="h-100 w-2 bg-white opacity-100 self-center"></div>
 
           <div className="flex-1">
-            {/* Sub-label / Main Title */}
-            <p className="text-gray-300 text-3xl font-light mb-2">
-              {currentQuestionData.subLabel}
-            </p>
-            {/* Question Label */}
-            <h2 className="text-7xl font-bold text-white mb-8">
-              {currentQuestionData.label}
-            </h2>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={currentQuestion}
+                custom={direction}
+                initial={(dir: 1 | -1) => ({ x: dir > 0 ? 80 : -80, opacity: 0, scale: 0.98 })}
+                animate={{ x: 0, opacity: 1, scale: 1, transition: { duration: 0.35, ease: "easeOut" } }}
+                exit={(dir: 1 | -1) => ({ x: dir > 0 ? -80 : 80, opacity: 0, scale: 0.98, transition: { duration: 0.25, ease: "easeIn" } })}
+              >
+                {/* Sub-label / Main Title */}
+                <p className="text-gray-300 text-3xl font-light mb-2">
+                  {currentQuestionData.subLabel}
+                </p>
+                {/* Question Label */}
+                <h2 className="text-7xl font-bold text-white mb-8">
+                  {currentQuestionData.label}
+                </h2>
 
-            {/* Input Field */}
-            <div className="w-96"> {/* Container to control width for both types */}
+                {/* Input Field */}
+                <div className="w-96"> {/* Container to control width for both types */}
 
-              {/* 🚀 GRADIENT BORDER WRAPPER (Outer div) */}
-              <div className="p-[4px] rounded-lg bg-gradient-to-r from-red-500 via-blue-500 to-orange-500">
+                  {/* 🚀 GRADIENT BORDER WRAPPER (Outer div) */}
+                  <div className="p-[4px] rounded-lg bg-gradient-to-r from-red-500 via-blue-500 to-orange-500">
 
-                {currentQuestionData.type === "select" ? (
-                  <select
-                    value={currentValue}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    // Inner element has white background and dark text
-                    className="w-full p-4 pr-10 text-xl bg-white text-gray-900 rounded-lg focus:outline-none appearance-none text-left"
-                    // Custom arrow needs to be dark for the white background
-                    style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231F2937'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
-                  >
-                    <option value="" disabled className="text-gray-500">{currentQuestionData.placeholder}</option>
-                    {currentQuestionData.options?.map((option) => (
-                      <option key={option} value={option} className="text-gray-900">
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type={currentQuestionData.type === "number" ? "number" : "text"}
-                    value={currentValue}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    placeholder={currentQuestionData.placeholder}
-                    // Inner element has white background and dark text
-                    className="w-full p-4 text-xl bg-white text-gray-900 rounded-lg placeholder-gray-500 focus:outline-none transition-all duration-300"
-                    {...(currentQuestionData.type === "number" && { step: "any" })}
-                  />
-                )}
-              </div>
-            </div>
+                    {currentQuestionData.type === "select" ? (
+                      <select
+                        value={currentValue}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        // Inner element has white background and dark text
+                        className="w-full p-4 pr-10 text-xl bg-white text-gray-900 rounded-lg focus:outline-none appearance-none text-left"
+                        // Custom arrow needs to be dark for the white background
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231F2937'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
+                      >
+                        <option value="" disabled className="text-gray-500">{currentQuestionData.placeholder}</option>
+                        {currentQuestionData.options?.map((option) => (
+                          <option key={option} value={option} className="text-gray-900">
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={currentQuestionData.type === "number" ? "number" : "text"}
+                        value={currentValue}
+                        onChange={(e) => handleInputChange(e.target.value)}
+                        placeholder={currentQuestionData.placeholder}
+                        // Inner element has white background and dark text
+                        className="w-full p-4 text-xl bg-white text-gray-900 rounded-lg placeholder-gray-500 focus:outline-none transition-all duration-300"
+                        {...(currentQuestionData.type === "number" && { step: "any" })}
+                      />
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
@@ -327,11 +348,11 @@ export default function MarsHealthForm() {
           disabled={!canProceed}
           className="px-10 py-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
         >
-          {currentQuestion === questions.length - 1 ? "Get Assessment" : "Next →"}
+          {currentQuestion === questions.length - 1 ? "Take Off" : "Next →"}
         </button>
       )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
