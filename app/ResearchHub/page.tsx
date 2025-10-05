@@ -26,9 +26,15 @@ export default function App() {
       <div className="max-w-7xl mx-auto">
         
         {/* Header Section */}
-        <header className="mb-12">
-          <h1 className="text-4xl font-bold mb-6">NASA Research Hub</h1>
-          <div className="relative">
+        <header className="mb-12 flex items-center justify-between">
+          <h1 className="text-4xl font-bold">NASA Research Hub</h1>
+          <a href="/StartJourney#bottom" className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15 transition-colors">Back</a>
+        </header>
+        
+        <p className="text-gray-300 -mt-8 mb-8">Explore curated research about Mars and space biology.</p>
+        
+        {/* Search */}
+        <div className="relative mb-12">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <SearchIcon />
             </div>
@@ -37,8 +43,7 @@ export default function App() {
               placeholder="What do you want to know more about Mars?"
               className="w-full bg-white/10 backdrop-blur-sm text-white placeholder-gray-400 rounded-full py-4 pl-12 pr-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-        </header>
+        </div>
 
         {/* Main Content Section */}
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-12">

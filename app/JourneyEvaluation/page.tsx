@@ -22,10 +22,11 @@ export default function JourneyEvaluation() {
   return (
     <div className="min-h-screen bg-gradient-to-bl from-[#697bee] via-black to-[#ee8869] text-white font-sans p-8 md:p-12">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-12">
+        <header className="mb-12 flex items-center justify-between">
           <h1 className="text-4xl font-bold">Journey Evaluation</h1>
-          <p className="text-gray-300 mt-2">Personalized results from your HealthForm.</p>
+          <a href="/StartJourney#bottom" className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15 transition-colors">Back</a>
         </header>
+        <p className="text-gray-300 -mt-8 mb-8">Personalized results from your HealthForm.</p>
 
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white/5 border border-white/20 rounded-2xl p-6 backdrop-blur-md">

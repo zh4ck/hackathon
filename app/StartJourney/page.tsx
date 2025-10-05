@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Montserrat } from "next/font/google";
 import { useRouter } from "next/navigation";
 
@@ -13,6 +13,7 @@ const montserrat = Montserrat({
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [firstSectionLocked, setFirstSectionLocked] = useState(true);
+  const [isInitialReady, setIsInitialReady] = useState(false);
   const sectionRefs = useRef<HTMLDivElement[]>([]);
   const router = useRouter();
   const [marsRocketTransform, setMarsRocketTransform] = useState({
@@ -110,6 +111,44 @@ export default function Home() {
     };
   }, []);
 
+  // Ensure deep-linking to bottom lands user at the bottom section without visible jump
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.location.hash === "#bottom") {
+      setFirstSectionLocked(false);
+      const section = buttonSectionRef.current;
+      if (section) {
+        const prevScrollBehavior = document.documentElement.style.scrollBehavior;
+        document.documentElement.style.scrollBehavior = "auto";
+        // Remove the hash to prevent the browser or any observers from re-scrolling
+        try {
+          const { pathname, search } = window.location;
+          window.history.replaceState(null, "", `${pathname}${search}`);
+        } catch {}
+        const offset = 300; // pixels above the bottom section
+        const targetTop = Math.max(0, section.offsetTop - offset);
+        // Ensure layout has settled: do two frames just in case
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: targetTop, behavior: "auto" });
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: targetTop, behavior: "auto" });
+          });
+        });
+        // Restore any previous smooth scroll behavior
+        document.documentElement.style.scrollBehavior = prevScrollBehavior;
+      } else {
+        const offset = 400;
+        const targetTop = Math.max(0, document.body.scrollHeight - window.innerHeight - offset);
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: targetTop, behavior: "auto" });
+        });
+      }
+      setIsInitialReady(true);
+      return;
+    }
+    setIsInitialReady(true);
+  }, []);
+
   // ADDED: This useEffect watches the button section to hide/show the timeline
   useEffect(() => {
     const section = buttonSectionRef.current;
@@ -135,8 +174,10 @@ export default function Home() {
     };
   }, []);
 
+  
+
   return (
-    <div>
+    <div style={{ visibility: isInitialReady ? "visible" : "hidden" }}>
       <div className="flex text-center justify-center h-[100vh] w-full relative">
         <div className="flex flex-col items-center">
           <h1
@@ -145,7 +186,7 @@ export default function Home() {
             Start Your Journey
           </h1>
           <h1
-            className={`${montserrat.className} flex items-center mt-30 sm:mt-5 md:mt-10 text-2xl md:text-3xl lg:text-3xl xl:text-3xl font-[500] italic text-gray-500`}
+            className={`${montserrat.className} flex items-center mt-30 sm:mt-5 md:mt-10 text-2xl md:text-3xl lg:text-3xl xl:text-3xl font-[500] italic text-gray-200`}
           >
             Go For Launch
           </h1>
@@ -171,6 +212,8 @@ export default function Home() {
         <div
           style={{
             background:
+              "radial-gradient(closest-side at 60% 50%, rgba(46,204,113,0.25) 0%, rgba(46,204,113,0.0) 65%), " +
+              "radial-gradient(closest-side at 35% 40%, rgba(46,204,113,0.18) 0%, rgba(46,204,113,0.0) 60%), " +
               "linear-gradient(180deg, #00FFE6 0%, #1A4B63 55%, #0B0B0B 100%)",
           }}
           className="
