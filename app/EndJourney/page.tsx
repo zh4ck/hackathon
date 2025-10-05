@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Share_Tech_Mono } from 'next/font/google';
 import { Rss, Beaker, Thermometer, Wind, AlertTriangle, HelpCircle, Activity } from 'lucide-react';
-import { useState, useEffect, ReactNode, ElementType } from 'react';
+import { useState, useEffect, useRef, ReactNode, ElementType } from 'react';
 
 // A more futuristic, monospace font for the terminal feel
 const techMono = Share_Tech_Mono({ subsets: ['latin'], weight: ['400'] });
@@ -40,11 +40,34 @@ interface LogEntryProps {
 }
 
 function LogEntry({ timestamp, title, icon: Icon, children }: LogEntryProps) {
-  const bodyText = typeof children === 'string' ? children : '';
-  const typedBody = useTypingEffect(bodyText, 10);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -10% 0px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="relative border-b border-blue-500/20 py-6 px-4 group">
+    <div
+      ref={containerRef}
+      className={`relative border-b border-blue-500/20 py-6 px-4 group transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+      }`}
+    >
       {/* Corner Brackets for effect */}
       <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-blue-500/0 group-hover:border-blue-500 transition-all duration-300"></div>
       <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-blue-500/0 group-hover:border-blue-500 transition-all duration-300"></div>
@@ -56,9 +79,7 @@ function LogEntry({ timestamp, title, icon: Icon, children }: LogEntryProps) {
             <h3 className="text-xl text-blue-300">{title}</h3>
             {timestamp && <p className="text-xs text-gray-500">{timestamp}</p>}
           </div>
-          <p className="text-gray-300 mt-2 pr-4">{typedBody}
-            <span className="animate-pulse">_</span>
-          </p>
+          <p className="text-gray-300 mt-2 pr-4">{children}</p>
         </div>
       </div>
     </div>
