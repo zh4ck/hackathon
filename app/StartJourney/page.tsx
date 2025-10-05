@@ -19,6 +19,7 @@ export default function Home() {
   const [marsRocketTransform, setMarsRocketTransform] = useState({
     y: 0,
     rotation: 0,
+    scale: 1,
   });
   const marsSectionRef = useRef<HTMLDivElement>(null);
 
@@ -114,8 +115,8 @@ export default function Home() {
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting) {
-          const targetY = window.innerHeight / 2;
-          setMarsRocketTransform({ y: targetY, rotation: 180 });
+          const targetY = window.innerHeight * 0.45; // position above the buttons (~56%)
+          setMarsRocketTransform({ y: targetY, rotation: 180, scale: 1 });
           observer.disconnect();
         }
       },
@@ -130,6 +131,27 @@ export default function Home() {
       observer.disconnect();
     };
   }, []);
+
+  // Trigger a simple landing animation once the timeline/nav disappears (approach and settle on Mars)
+  useEffect(() => {
+    if (!isTimelineVisible) {
+      // Approach: slightly enlarge and descend
+      setMarsRocketTransform((prev) => ({
+        y: prev.y + 40,
+        rotation: 180,
+        scale: 1.15,
+      }));
+      const settleTimeout = setTimeout(() => {
+        // Settle: small bounce and return to normal scale
+        setMarsRocketTransform((prev) => ({
+          y: prev.y + 10,
+          rotation: 180,
+          scale: 1,
+        }));
+      }, 800);
+      return () => clearTimeout(settleTimeout);
+    }
+  }, [isTimelineVisible]);
 
   // Ensure deep-linking to bottom lands user at the bottom section without visible jump
   useLayoutEffect(() => {
@@ -370,41 +392,35 @@ export default function Home() {
           <img
             src="/roktet 1.png"
             alt="Rocket"
-            className="w-[8vw] h-auto transition-transform duration-[2500ms] ease-out"
+            className="w-[10vw] h-auto transition-transform duration-[1500ms] ease-out"
             style={{
-              transform: `translateY(${marsRocketTransform.y}px) rotate(${marsRocketTransform.rotation}deg)`,
+              transform: `translateY(${marsRocketTransform.y}px) rotate(${marsRocketTransform.rotation}deg) scale(${marsRocketTransform.scale})`,
             }}
           />
         </div>
         
         
-        <div className="absolute top-[70%] left-1/2 transform -translate-x-1/2 flex justify-center z-[30]">
-        <Link href="/MarsSurvivalKit">
-          <div className="flex flex-col items-center -translate-y-6 transform transition-transform duration-300 hover:scale-110 mr-[15vw]">
-            <img src="/Base.png" alt="Base" className="w-[12vw] h-auto" />
-            <p className="mt-2 text-white text-center font-[700]">Mars Survival Kit</p>
-          </div>
-        </Link>
+        <div className="absolute top-[56%] left-1/2 transform -translate-x-1/2 w-full max-w-[1100px] px-10 flex justify-between items-end z-[30]">
           <Link href="/JourneyEvaluation">
-          <div className="flex flex-col items-center translate-y-6 transform transition-transform duration-300 hover:scale-110">
-            <img
-              src="/JourneyEval.png"
-              alt="JourneyEval"
-              className="w-[12vw] h-auto"
-            />
-            <p className="mt-2 text-white text-center font-[700]">Journey Evaluation</p>
-          </div>
+            <div className="flex flex-col items-center translate-y-4 transform transition-transform duration-300 hover:scale-110">
+              <img
+                src="/JourneyEval.png"
+                alt="JourneyEval"
+                className="w-[14vw] max-w-[200px] h-auto"
+              />
+              <p className="mt-2 text-white text-center font-[800] text-lg md:text-xl">Journey Evaluation</p>
+            </div>
           </Link>
-          <Link href="/ResearchHub"> {/* <-- 3. Set the href to your internal path */}
-          <div className="flex flex-col items-center -translate-y-6 transform transition-transform duration-300 hover:scale-110 ml-[15vw]">
-            <img
-              src="/Satelite.png"
-              alt="Satelite"
-              className="w-[12vw] h-auto"
-            />
-            <p className="mt-2 text-white text-center font-[700]">Biology on Mars</p>
-          </div>
-        </Link>
+          <Link href="/ResearchHub">
+            <div className="flex flex-col items-center -translate-y-4 transform transition-transform duration-300 hover:scale-110">
+              <img
+                src="/Satelite.png"
+                alt="Satelite"
+                className="w-[14vw] max-w-[200px] h-auto"
+              />
+              <p className="mt-2 text-white text-center font-[900] text-xl md:text-2xl">Research Hub</p>
+            </div>
+          </Link>
         </div>
       </div>
       
