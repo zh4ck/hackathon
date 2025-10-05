@@ -26,6 +26,9 @@ export default function Home() {
   // ADDED: State to control the timeline's visibility
   const [isTimelineVisible, setIsTimelineVisible] = useState(true);
   const buttonSectionRef = useRef<HTMLDivElement>(null);
+  
+  // ADDED: State to track the current active section
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
 
   const sections = [
     {
@@ -75,6 +78,19 @@ export default function Home() {
     if (section) {
       section.scrollIntoView({ behavior: "smooth" });
       if (index === 1) setFirstSectionLocked(false);
+      setCurrentSectionIndex(index);
+    }
+  };
+
+  const navigateUp = () => {
+    if (currentSectionIndex > 0) {
+      scrollToSection(currentSectionIndex - 1);
+    }
+  };
+
+  const navigateDown = () => {
+    if (currentSectionIndex < sections.length - 1) {
+      scrollToSection(currentSectionIndex + 1);
     }
   };
 
@@ -216,6 +232,49 @@ export default function Home() {
     };
   }, []);
 
+  // ADDED: Keyboard navigation for Arrow Up and Arrow Down
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        navigateDown();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        navigateUp();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentSectionIndex]);
+
+  // ADDED: Track which section is currently in view
+  useEffect(() => {
+    const observers = sectionRefs.current.map((section, index) => {
+      if (!section) return null;
+      
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setCurrentSectionIndex(index);
+            }
+          });
+        },
+        {
+          threshold: 0.5, // Section is considered active when 50% is visible
+        }
+      );
+
+      observer.observe(section);
+      return observer;
+    });
+
+    return () => {
+      observers.forEach((observer) => observer?.disconnect());
+    };
+  }, []);
+
   
 
   return (
@@ -321,46 +380,6 @@ export default function Home() {
                 <p><span className="text-gray-400">Threats:</span> {sec.threats}</p>
                 <p><span className="text-gray-400">Radiation Dose:</span> {sec.radiationDose}</p>
               </div>
-              {index > 0 && (
-                <button
-                  onClick={() => scrollToSection(index - 1)}
-                  className="absolute top-8 right-8 bg-white text-black p-4 rounded-full hover:scale-110 transition-transform"
-                >
-                  <svg
-                    className="w-4 h-4 rotate-180"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              )}
-              {index < sections.length - 1 && (
-                <button
-                  onClick={() => scrollToSection(index + 1)}
-                  className="absolute bottom-8 right-8 bg-white text-black p-4 rounded-full hover:scale-110 transition-transform"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -442,6 +461,58 @@ export default function Home() {
     >
       <span className="relative z-10">Enter The Dark Side</span>
       </button>
+      </div>
+
+      {/* ADDED: Fixed navigation buttons */}
+      <div className="fixed right-8 top-1/2 transform -translate-y-1/2 flex flex-col gap-4 z-50">
+        <button
+          onClick={navigateUp}
+          disabled={currentSectionIndex === 0}
+          className={`bg-white text-black p-4 rounded-full transition-all duration-300 ${
+            currentSectionIndex === 0
+              ? "opacity-30 cursor-not-allowed"
+              : "hover:scale-110 hover:shadow-lg"
+          }`}
+          aria-label="Navigate to previous section"
+        >
+          <svg
+            className="w-6 h-6 rotate-180"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+        <button
+          onClick={navigateDown}
+          disabled={currentSectionIndex === sections.length - 1}
+          className={`bg-white text-black p-4 rounded-full transition-all duration-300 ${
+            currentSectionIndex === sections.length - 1
+              ? "opacity-30 cursor-not-allowed"
+              : "hover:scale-110 hover:shadow-lg"
+          }`}
+          aria-label="Navigate to next section"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );
