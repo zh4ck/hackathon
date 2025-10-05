@@ -1,6 +1,7 @@
 "use client";
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { Share_Tech_Mono } from 'next/font/google';
 import { Rss, Beaker, Thermometer, Wind, AlertTriangle, HelpCircle, Activity } from 'lucide-react';
 import { useState, useEffect, ReactNode, ElementType } from 'react';
@@ -53,7 +54,7 @@ function LogEntry({ timestamp, title, icon: Icon, children }: LogEntryProps) {
         <div className="w-full">
           <div className="flex justify-between items-center">
             <h3 className="text-xl text-blue-300">{title}</h3>
-            <p className="text-xs text-gray-500">{timestamp}</p>
+            {timestamp && <p className="text-xs text-gray-500">{timestamp}</p>}
           </div>
           <p className="text-gray-300 mt-2 pr-4">{typedBody}
             <span className="animate-pulse">_</span>
@@ -73,9 +74,14 @@ export default function EndJourney() {
       <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-[#02040a] to-[#02040a]"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <header className="text-left mb-8 border-b-2 border-red-500/50 pb-4">
-          <h1 className="text-5xl font-bold text-red-400 tracking-wider">UNKNOWN OBJECTS</h1>
-          <p className="text-gray-400 text-lg">CONNECTION ESTABLISHED: MARS DEEP ORBIT PROBE 7</p>
+        <header className="flex items-center justify-between mb-8 border-b-2 border-red-500/50 pb-4">
+          <div>
+            <h1 className="text-5xl font-bold text-red-400 tracking-wider">UNKNOWN OBJECTS</h1>
+            <p className="text-gray-400 text-lg">CONNECTION ESTABLISHED: MARS DEEP ORBIT PROBE 7</p>
+          </div>
+          <Link href="/StartJourney#bottom" className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 hover:bg-white/15 transition-colors">
+            Back
+          </Link>
         </header>
 
         {/* --- NEW IMAGE SECTION AT THE TOP --- */}
@@ -95,31 +101,70 @@ export default function EndJourney() {
         </div>
         {/* --- END NEW IMAGE SECTION --- */}
 
+        {/* --- STATIC TOPICS SECTION: Mars Questions to Explore --- */}
+        <section className="mb-12">
+          <h2 className="text-3xl sm:text-4xl font-bold text-red-300 tracking-wide mb-6">OPEN QUESTIONS: MARS EXPLORATION</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-lg border border-red-500/30 bg-black/30 p-5 hover:border-red-400/50 transition-colors">
+              <h3 className="text-2xl text-red-200 mb-2">1. Was there (or is there) life?</h3>
+              <p className="text-gray-300 leading-relaxed">
+                From ancient lakebeds in Jezero Crater to organics detected by Curiosity, Mars keeps teasing us. The key is context: biosignatures must be distinguished from abiotic organics. Sample return and coordinated in situ geochemistry are crucial next steps.
+              </p>
+            </div>
+            <div className="rounded-lg border border-red-500/30 bg-black/30 p-5 hover:border-red-400/50 transition-colors">
+              <h3 className="text-2xl text-red-200 mb-2">2. Could life exist now?</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Modern Mars is cold, dry, and irradiated—yet subsurface brines, perchlorates, and transient methane plumes hint at niches. If life persists, it likely hides underground where liquid water and shielding coexist.
+              </p>
+            </div>
+            <div className="rounded-lg border border-red-500/30 bg-black/30 p-5 hover:border-red-400/50 transition-colors">
+              <h3 className="text-2xl text-red-200 mb-2">3. Planetary history: Why did Mars “die”?</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Mars once had rivers, lakes, and perhaps seas. The magnetic field collapsed, the atmosphere thinned, and surface habitability waned. Untangling chronology—volcanism, dynamo shutoff, and atmospheric escape—defines how long Mars stayed friendly to life.
+              </p>
+            </div>
+            <div className="rounded-lg border border-red-500/30 bg-black/30 p-5 hover:border-red-400/50 transition-colors">
+              <h3 className="text-2xl text-red-200 mb-2">4. Current environment: How dangerous is it really?</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Cosmic rays, dust storms, perchlorate chemistry, and extreme diurnal swings all pose hazards. Quantifying real exposure—radiation dose rates, dust toxicity, and storm dynamics—sets the bar for human exploration and long-term settlement.
+              </p>
+            </div>
+          </div>
+        </section>
 
-        {/* Log Entries */}
+
+        {/* Small Topics */}
         <div className="space-y-4">
-          <LogEntry timestamp="2025-10-05 15:40:49" title="SYSTEM STATUS" icon={Activity}>
-            All systems nominal. Initiating data stream from Elysium Planitia sector. Awaiting telemetry...
+          <LogEntry timestamp="" title="Dust Devils & Electrification" icon={Wind}>
+            How do electrostatic charge and dust lifting interact, and what does that mean for surface operations and instrument longevity?
           </LogEntry>
 
-          <LogEntry timestamp="2025-10-05 15:41:12" title="ATMOSPHERIC ANOMALY" icon={Rss}>
-            Transient methane plume detected at coordinates [REDACTED]. Concentration: 45 PPB. Duration: 1.2 hours. Source signature does not match known geological models. Querying biological origin probability...
-          </LogEntry>
-          
-          <LogEntry timestamp="2025-10-05 15:42:05" title="SUBSURFACE SCAN" icon={Beaker}>
-            Ground-penetrating radar confirms high-conductivity liquid layer 800m below Vastitas Borealis. Perchlorate saturation estimated at 28%. Analysis suggests potential for microbial viability under extreme conditions.
-          </LogEntry>
-          
-          <LogEntry timestamp="2025-10-05 15:42:58" title="HISTORICAL ANALYSIS" icon={Wind}>
-            Core sample magnetic data aligns with the "Great Calamity" hypothesis. Magnetosphere collapse occurred over approx. 10,000 years. Pre-event biosignatures remain inconclusive.
+          <LogEntry timestamp="" title="Subglacial Ice Mapping" icon={Rss}>
+            Refine orbital radar constraints on buried ice sheets to identify accessible water resources and paleoclimate archives.
           </LogEntry>
 
-          <LogEntry timestamp="2025-10-05 15:43:21" title="PRIORITY ALERT" icon={AlertTriangle}>
-            Recurring Slope Lineae analysis from HiRISE imagery shows spectral evidence of hydrated salts, but also complex organic compounds. Cross-referencing with rover soil samples. WARNING: Data mismatch detected.
+          <LogEntry timestamp="" title="Seasonal CO₂ Jets" icon={Thermometer}>
+            Geyser-like CO₂ sublimation events sculpt terrain each spring—what controls their distribution and energy budget?
           </LogEntry>
 
-          <LogEntry timestamp="2025-10-05 15:44:03" title="UNKNOWN SIGNAL" icon={HelpCircle}>
-            A non-EM, patterned signal has been isolated from background seismic noise near the Tharsis Montes region. Pattern is non-random but does not conform to known geological phenomena. Further investigation required. [LOGGING PAUSED]
+          <LogEntry timestamp="" title="Tharsis Volcanism Timescales" icon={Activity}>
+            Pin down eruptive chronology to link interior heat flow with atmospheric evolution and transient habitability windows.
+          </LogEntry>
+
+          <LogEntry timestamp="" title="Lava Tubes as Shelters" icon={HelpCircle}>
+            Characterize lava tube stability and radiation shielding to evaluate natural habitats for future crews (and biosignature preservation).
+          </LogEntry>
+
+          <LogEntry timestamp="" title="Perchlorate Chemistry & Health" icon={Beaker}>
+            Assess perchlorate reactivity in regolith and its implications for agriculture, life support, and human physiology.
+          </LogEntry>
+
+          <LogEntry timestamp="" title="Dune Migration Dynamics" icon={Wind}>
+            Quantify present-day aeolian transport rates to understand climate variability and dust storm initiation thresholds.
+          </LogEntry>
+
+          <LogEntry timestamp="" title="Radiation Microenvironments" icon={AlertTriangle}>
+            Map dose rate variability across surface features to inform EVA limits and habitat siting.
           </LogEntry>
         </div>
       </div>
