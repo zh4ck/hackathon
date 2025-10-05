@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface AssessmentResult {
   survivalChance: string;
@@ -18,7 +18,20 @@ export default function JourneyEvaluation() {
       "Low — No immediate medical concerns. Continue routine monitoring for orthostatic intolerance and bone density changes; be mindful of radiation exposure countermeasures.",
   };
 
-  const [result] = useState<AssessmentResult>(defaultResult);
+  const [result, setResult] = useState<AssessmentResult>(defaultResult);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("marsAssessmentResult");
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<AssessmentResult>;
+        // shallow-merge parsed over default to ensure missing keys handled
+        setResult({ ...defaultResult, ...parsed });
+      }
+    } catch (e) {
+      console.error("Failed to read assessment from sessionStorage", e);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-bl from-[#697bee] via-black to-[#ee8869] text-white font-sans p-8 md:p-12">
@@ -33,7 +46,7 @@ export default function JourneyEvaluation() {
           </a>
         </header>
         <p className="text-gray-300 -mt-8 mb-8">
-          Default assessment for a trained astronaut.
+          Your personalized assessment (defaults shown if none available).
         </p>
 
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">

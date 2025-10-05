@@ -7,45 +7,28 @@ export default function Home() {
   const router = useRouter();
 
   const handleAstronautJourney = async () => {
-    // Check if default assessment is already cached
+    // If we already have a cached default, just navigate
     const cachedDefault = sessionStorage.getItem("marsAssessmentDefault");
     if (cachedDefault) {
-      console.log("Using cached default assessment");
       router.push("/StartJourney");
       return;
     }
 
-    const heightCm = 175;
-    const massKg = 65;
-    const bmi = parseFloat((massKg / Math.pow(heightCm / 100, 2)).toFixed(1));
-    const payload = {
-      biologicalSex: "Male" as const,
-      age: 27,
-      bmi,
-      sleep: 8,
-      medicalCondition: "none",
+    // Default assessment for a trained astronaut — no API call
+    const defaultAssessment = {
+      survivalChance:
+        "High — As a trained astronaut with robust conditioning and no chronic conditions, your survival probability on an initial mission is high. Continue routine countermeasures to mitigate long-term risks.",
+      improvements:
+        "Maintain targeted aerobic and resistance training, follow a nutrient-dense diet, monitor bone density and vestibular function periodically, and ensure consistent sleep hygiene.",
+      medicalConcern:
+        "Low — No immediate medical concerns. Maintain periodic monitoring for radiation exposure and cardiovascular changes.",
     };
+
     try {
-      const res = await fetch("/api/mars-assessment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        try {
-          // Cache the default assessment result for future use
-          sessionStorage.setItem("marsAssessmentDefault", JSON.stringify(data));
-          sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
-        } catch (e) {
-          console.error("Failed to store default assessment", e);
-        }
-      } else {
-        console.error("Default assessment request failed", await res.text());
-      }
-    } catch (err) {
-      if (err instanceof Error) console.error("Default assessment error", err.message);
-      else console.error("Default assessment error", err);
+      sessionStorage.setItem("marsAssessmentDefault", JSON.stringify(defaultAssessment));
+      sessionStorage.setItem("marsAssessmentResult", JSON.stringify(defaultAssessment));
+    } catch (e) {
+      console.error("Failed to store default assessment", e);
     } finally {
       router.push("/StartJourney");
     }
