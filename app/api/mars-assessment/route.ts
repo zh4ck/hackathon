@@ -71,9 +71,9 @@ Be detailed, professional, and specific in your analysis.`;
     }
     
     // Parse the response into the three sections
-    const survivalMatch = analysis.match(/SURVIVAL CHANCE:\s*(.*?)(?=IMPROVEMENTS NEEDED:|$)/s);
-    const improvementsMatch = analysis.match(/IMPROVEMENTS NEEDED:\s*(.*?)(?=MEDICAL CONCERN:|$)/s);
-    const medicalMatch = analysis.match(/MEDICAL CONCERN:\s*(.*?)$/s);
+    const survivalMatch = analysis.match(/SURVIVAL CHANCE:\s*(.*?)(?=IMPROVEMENTS NEEDED:|$)/);
+    const improvementsMatch = analysis.match(/IMPROVEMENTS NEEDED:\s*(.*?)(?=MEDICAL CONCERN:|$)/);
+    const medicalMatch = analysis.match(/MEDICAL CONCERN:\s*(.*?)$/);
 
     const result = {
       survivalChance: survivalMatch?.[1]?.trim() || "AI parse error. See fallback details.",
