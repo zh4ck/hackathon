@@ -54,16 +54,16 @@ export default function App() {
             <div className="bg-white/5 border border-white/20 rounded-2xl p-6 md:p-8 space-y-4 backdrop-blur-md">
               <h3 className="text-xl font-bold text-gray-200">Recurring Slope Lineae (RSL)</h3>
               <p className="text-gray-300 leading-relaxed">
-                RSL are narrow, dark streaks—often just a few meters wide—that appear on Martian crater walls
-                and hillsides during the planet's warmer months, then fade when temperatures drop. Discovered
-                by NASA's Mars Reconnaissance Orbiter in 2011, they sparked major interest because they seemed
+                RSL are narrow, dark streaks&mdash;often just a few meters wide&mdash;that appear on Martian crater walls
+                and hillsides during the planet&apos;s warmer months, then fade when temperatures drop. Discovered
+                by NASA&apos;s Mars Reconnaissance Orbiter in 2011, they sparked major interest because they seemed
                 to indicate liquid water
               </p>
               <p className="text-gray-300 leading-relaxed">
                 Early hypotheses suggested they were caused by briny (salty) water seeping from underground,
-                since salts can lower water's freezing point enough to allow it to exist temporarily in Mars's thin
+                since salts can lower water&apos;s freezing point enough to allow it to exist temporarily in Mars&apos;s thin
                 atmosphere. However, later studies using high-resolution imaging and spectral data suggested
-                RSL might instead be dry granular flows — essentially, sand or dust avalanches triggered by
+                RSL might instead be dry granular flows &mdash; essentially, sand or dust avalanches triggered by
                 sublimating ice or seasonal temperature changes.
               </p>
             </div>

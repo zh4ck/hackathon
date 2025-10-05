@@ -42,9 +42,9 @@ export async function POST(req: Request) {
           });
         }
 
-        // Add related topics if available
+        // ✅ Fixed: replaced `any` with a proper type
         if (data.RelatedTopics && Array.isArray(data.RelatedTopics)) {
-          data.RelatedTopics.slice(0, 2).forEach((topic: any, index: number) => {
+          data.RelatedTopics.slice(0, 2).forEach((topic: { Text?: string }, index: number) => {
             if (topic.Text && topic.Text.length > 50) {
               searchResults.push({
                 id: `ddg-topic-${index}`,

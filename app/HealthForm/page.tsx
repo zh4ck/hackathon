@@ -17,7 +17,6 @@ interface AssessmentResult {
   medicalConcern: string;
 }
 
-
 const questions = [
   {
     id: "biologicalSex",
@@ -73,11 +72,13 @@ export default function MarsHealthForm() {
   });
   const router = useRouter();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [results, setResults] = useState<AssessmentResult | null>(null);
+  // ✅ Removed unused variable `results`
+  // const [results, setResults] = useState<AssessmentResult | null>(null);
 
-  const handleStartJourney = () => {
-    router.push("/StartJourney");
-  };
+  // ✅ Removed unused function `handleStartJourney`
+  // const handleStartJourney = () => {
+  //   router.push("/StartJourney");
+  // };
 
   const handleInputChange = (value: string) => {
     const questionId = questions[currentQuestion].id as keyof FormData;
@@ -141,28 +142,20 @@ export default function MarsHealthForm() {
     }
 
     return { valid, message };
-  }, [currentValue, currentQuestionData.id]);
+  // ✅ Added min and max as dependencies
+  }, [currentValue, currentQuestionData.id, currentQuestionData.min, currentQuestionData.max]);
 
   const canProceed = validation.valid;
-
 
   const handleSubmit = async () => {
     setIsAnalyzing(true);
 
-    // --- THIS IS THE FIX ---
-    // Perform a final check on all form data before submitting.
     for (const key in formData) {
       if (formData[key as keyof FormData].trim() === "") {
-        setResults({
-          survivalChance: "Error",
-          improvements: `The field '${key}' was left empty. Please go back and complete all questions.`,
-          medicalConcern: "Incomplete form submission."
-        });
         setIsAnalyzing(false);
-        return; // Stop the submission
+        return;
       }
     }
-    // --- END OF FIX ---
 
     try {
       const bmi = calculateBMI(formData.heightMass);
@@ -192,7 +185,6 @@ export default function MarsHealthForm() {
       }
 
       const data = await response.json();
-      setResults(data);
       if (typeof window !== "undefined") {
         try {
           sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
@@ -202,11 +194,6 @@ export default function MarsHealthForm() {
       }
     } catch (error) {
       console.error("Assessment failed:", error);
-      setResults({
-        survivalChance: "Error",
-        improvements: "Could not complete the assessment due to a server error or invalid input. Please try again.",
-        medicalConcern: (error as Error).message || "Unknown error."
-      });
     } finally {
       setIsAnalyzing(false);
       router.push("/StartJourney");
@@ -231,25 +218,20 @@ export default function MarsHealthForm() {
     }
   };
 
-  const resetForm = () => {
-    setCurrentQuestion(0);
-    setFormData({
-      biologicalSex: "",
-      age: "",
-      heightMass: "",
-      sleep: "",
-      medicalCondition: "",
-    });
-    setResults(null);
-  };
-
-  // --- I've omitted the JSX for brevity as it remains unchanged. ---
-  // --- Paste this logic into your existing file. ---
-  // --- The `return (...)` part of your component is correct. ---
-
+  // ✅ Removed unused resetForm
+  // const resetForm = () => {
+  //   setCurrentQuestion(0);
+  //   setFormData({
+  //     biologicalSex: "",
+  //     age: "",
+  //     heightMass: "",
+  //     sleep: "",
+  //     medicalCondition: "",
+  //   });
+  //   setResults(null);
+  // };
 
   return (
-
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="min-h-screen flex items-center justify-center bg-black text-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-tl from-orange-800 to-black opacity-30 z-0"></div>
 
@@ -281,18 +263,13 @@ export default function MarsHealthForm() {
                 </h2>
 
                 {/* Input Field */}
-                <div className="w-96"> {/* Container to control width for both types */}
-
-                  {/* 🚀 GRADIENT BORDER WRAPPER (Outer div) */}
+                <div className="w-96">
                   <div className="p-[4px] rounded-lg bg-gradient-to-r from-red-500 via-blue-500 to-orange-500">
-
                     {currentQuestionData.type === "select" ? (
                       <select
                         value={currentValue}
                         onChange={(e) => handleInputChange(e.target.value)}
-                        // Inner element has white background and dark text
                         className="w-full p-4 pr-10 text-xl bg-white text-gray-900 rounded-lg focus:outline-none appearance-none text-left"
-                        // Custom arrow needs to be dark for the white background
                         style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231F2937'%3e%3cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd' /%3e%3c/svg%3e")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.5em' }}
                       >
                         <option value="" disabled className="text-gray-500">{currentQuestionData.placeholder}</option>
@@ -308,7 +285,6 @@ export default function MarsHealthForm() {
                         value={currentValue}
                         onChange={(e) => handleInputChange(e.target.value)}
                         placeholder={currentQuestionData.placeholder}
-                        // Inner element has white background and dark text
                         className="w-full p-4 text-xl bg-white text-gray-900 rounded-lg placeholder-gray-500 focus:outline-none transition-all duration-300"
                         {...(currentQuestionData.type === "number" && { step: "any" })}
                       />
@@ -338,19 +314,19 @@ export default function MarsHealthForm() {
           </button>
 
           {isAnalyzing ? (
-        <div className="flex items-center space-x-3 px-10 py-4 bg-red-600 text-white text-lg rounded-lg">
-          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
-          <span>Analyzing...</span>
-        </div>
-      ) : (
-        <button
-          onClick={handleNext}
-          disabled={!canProceed}
-          className="px-10 py-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
-        >
-          {currentQuestion === questions.length - 1 ? "Take Off" : "Next →"}
-        </button>
-      )}
+            <div className="flex items-center space-x-3 px-10 py-4 bg-red-600 text-white text-lg rounded-lg">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-white"></div>
+              <span>Analyzing...</span>
+            </div>
+          ) : (
+            <button
+              onClick={handleNext}
+              disabled={!canProceed}
+              className="px-10 py-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+            >
+              {currentQuestion === questions.length - 1 ? "Take Off" : "Next →"}
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
