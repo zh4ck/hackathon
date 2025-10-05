@@ -37,14 +37,15 @@ export default function Home() {
           // Cache the default assessment result for future use
           sessionStorage.setItem("marsAssessmentDefault", JSON.stringify(data));
           sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
-        } catch (e: any) {
+        } catch (e) {
           console.error("Failed to store default assessment", e);
         }
       } else {
         console.error("Default assessment request failed", await res.text());
       }
-    } catch (err: any) {
-      console.error("Default assessment error", err);
+    } catch (err) {
+      if (err instanceof Error) console.error("Default assessment error", err.message);
+      else console.error("Default assessment error", err);
     } finally {
       router.push("/StartJourney");
     }

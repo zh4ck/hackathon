@@ -21,12 +21,14 @@ const SearchIcon = () => (
   </svg>
 );
 
+type SourceItem = string | { [key: string]: unknown } | null | undefined;
+
 // Main App Component
 export default function App() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [answer, setAnswer] = useState<string | null>(null);
-  const [sources, setSources] = useState<any[]>([]);
+  const [sources, setSources] = useState<SourceItem[]>([]);
   const [topic, setTopic] = useState<string>("");
 
   const doSearch = async (q: string) => {
@@ -46,9 +48,10 @@ export default function App() {
       if (!res.ok) throw new Error(`Search API failed with status ${res.status}`);
 
       const data = await res.json();
+
       // API expected to return { answer: string, sources: string[] }
-      setAnswer(data.answer ?? "No answer returned.");
-      setSources(Array.isArray(data.sources) ? data.sources : []);
+      setAnswer(typeof data.answer === 'string' ? data.answer : 'No answer returned.');
+      setSources(Array.isArray(data.sources) ? data.sources as SourceItem[] : []);
     } catch (err) {
       console.error("Search failed:", err);
       setAnswer("Search failed. Please try again.");
@@ -115,12 +118,12 @@ export default function App() {
                       content = s;
                     } else if (s && typeof s === 'object') {
                       // Common shapes: { pdf: 'url', page: 3 } or { url: '', title: '' }
-                      const url = s.pdf ?? s.url ?? s.link;
+                      const url = (s as { [key: string]: unknown }).pdf ?? (s as { [key: string]: unknown }).url ?? (s as { [key: string]: unknown }).link;
                       if (url && typeof url === 'string') {
-                        const label = s.title ?? url;
+                        const label = (s as { [key: string]: unknown }).title ?? url;
                         content = (
                           <a href={url} target="_blank" rel="noreferrer" className="underline">
-                            {label}
+                            {typeof label === 'string' ? label : url}
                           </a>
                         );
                       } else {
