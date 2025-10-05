@@ -18,8 +18,11 @@ export async function POST(req: Request) {
   console.log("GOOGLE_API_KEY exists:", !!process.env.GOOGLE_API_KEY);
   console.log("GEMINI_API_KEY value:", process.env.GEMINI_API_KEY);
   console.log("GOOGLE_API_KEY value:", process.env.GOOGLE_API_KEY);
-  console.log("Is placeholder:", (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) === "placeholder-key");
-  
+  console.log(
+    "Is placeholder:",
+    (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) === "placeholder-key"
+  );
+
   // Check if we have a valid API key
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   if (!apiKey || apiKey === "placeholder-key") {
@@ -30,7 +33,7 @@ export async function POST(req: Request) {
       let topic = "space biology";
       let keyFindings = "significant biological adaptations";
       let implications = "future space missions";
-      
+
       if (words.includes("plant") || words.includes("growth")) {
         topic = "plant biology in space";
         keyFindings = "altered growth patterns and gene expression";
@@ -56,12 +59,12 @@ export async function POST(req: Request) {
         keyFindings = "isolation effects and coping strategies";
         implications = "crew selection and support systems";
       }
-      
+
       return `🤖 AI Summary: This research focuses on ${topic}. The study reveals ${keyFindings} in space environments. These findings have important implications for ${implications}. The research contributes to our understanding of biological systems in space and informs future space exploration strategies.`;
     };
-    
-    return NextResponse.json({ 
-      summary: generateMockSummary(text)
+
+    return NextResponse.json({
+      summary: generateMockSummary(text),
     });
   }
 
@@ -69,29 +72,35 @@ export async function POST(req: Request) {
     console.log("Attempting to use Google Gemini API...");
     console.log("API Key present:", !!apiKey);
     console.log("API Key value:", apiKey?.substring(0, 10) + "...");
-    
+
     const response = await genAI.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `Summarize this NASA bioscience publication concisely:\n\n${text}`
+      contents: `Summarize this NASA bioscience publication concisely:\n\n${text}`,
     });
 
     console.log("Gemini API call successful");
     return NextResponse.json({ summary: response.text });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini API error:", error);
-    console.error("Error details:", error instanceof Error ? error.message : String(error));
+    const errMsg =
+      error instanceof Error
+        ? error.message
+        : typeof error === "string"
+        ? error
+        : JSON.stringify(error);
+    console.error("Error details:", errMsg);
     console.error("Full error:", JSON.stringify(error, null, 2));
-    
+
     // Check if it's an API key issue
-    if (error.message.includes("API key") || error.message.includes("authentication")) {
-      return NextResponse.json({ 
-        summary: `API Key Error: ${error.message}. Please verify your Google API key is correct and has the necessary permissions.` 
+    if (errMsg.includes("API key") || errMsg.includes("authentication")) {
+      return NextResponse.json({
+        summary: `API Key Error: ${errMsg}. Please verify your Google API key is correct and has the necessary permissions.`,
       });
     }
-    
+
     // Return a more helpful error message
-    return NextResponse.json({ 
-      summary: `Error generating summary: ${error.message}. Please check your Google API key configuration.` 
+    return NextResponse.json({
+      summary: `Error generating summary: ${errMsg}. Please check your Google API key configuration.`,
     });
   }
 }
