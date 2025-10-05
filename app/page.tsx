@@ -1,8 +1,45 @@
 "use client";
 
 import Link from "next/link"; // ✅ add this import
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleAstronautJourney = async () => {
+    const heightCm = 175;
+    const massKg = 65;
+    const bmi = parseFloat((massKg / Math.pow(heightCm / 100, 2)).toFixed(1));
+    const payload = {
+      biologicalSex: "Male" as const,
+      age: 27,
+      bmi,
+      sleep: 8,
+      medicalCondition: "none",
+    };
+    try {
+      const res = await fetch("/api/mars-assessment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        try {
+          sessionStorage.setItem("marsAssessmentResult", JSON.stringify(data));
+        } catch (e) {
+          console.error("Failed to store default assessment", e);
+        }
+      } else {
+        console.error("Default assessment request failed", await res.text());
+      }
+    } catch (err) {
+      console.error("Default assessment error", err);
+    } finally {
+      router.push("/StartJourney");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#0A0A0A] via-[#0C1413] to-[#2E1C0B] text-white flex flex-col overflow-hidden">
       {/* Navbar */}
@@ -35,9 +72,14 @@ export default function Home() {
               </p>
             </Link>
 
-            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-400 ml-5 mr-5 
+            <p
+              onClick={handleAstronautJourney}
+              role="button"
+              tabIndex={0}
+              className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-400 ml-5 mr-5 
                         hover:text-white hover:scale-[1.05] 
-                        transition-all duration-300 ease-in-out cursor-pointer">
+                        transition-all duration-300 ease-in-out cursor-pointer"
+            >
               Astronaut’s Journey
             </p>
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-400 mb-4 ml-5 mr-5 
